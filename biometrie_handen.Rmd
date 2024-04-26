@@ -300,19 +300,22 @@ ggplot(data = biometric_data,
        mapping = aes(x = ratio, fill = gender)) +
     geom_histogram(bins = 10, colour = "black") + # histogram layer with 10 bins
     facet_wrap(. ~ gender ~ id_scientist) +                       # split plots over gender
-    labs(x = "Length/width ratio") +
+    labs(x = "Length/width ratio", y = "amount of people") +
+    geom_density(fill = NA) +
     theme_minimal()
 
 ggplot(data = biometric_data,
        mapping = aes(x = ratio, fill = gender)) +
     geom_histogram(bins = 10, colour = "black") + # histogram layer with 10 bins
     facet_wrap(. ~ gender) +                       # split plots over gender
-    labs(x = "Length/width ratio") +
+    labs(x = "Length/width ratio", y = "amount of people") +
+    geom_density(fill = NA) +
     theme_minimal()
 
 length(which(biometric_data$gender == "m"))
 length(which(biometric_data$gender == "v"))
 ```
+de aantallen van de ratio tussen mannen en vrouwen en de dichtheid als lijn door de histogram
 
 ### Welke verdeling?
 
@@ -388,6 +391,30 @@ ggplot(data = biometric_data,
     facet_wrap(. ~ id_scientist) +
     ylab("hand lengte (mm)")
 ```
+
+
+```{r}
+shapiro.test(biometric_data$ratio)
+```
+De p waarde is veel groter dan 0.05, dus t-test kan uitgevoerdt worden
+```{r}
+ratio_female <- subset(biometric_data,
+                       subset = gender == "v",
+                       select = ratio,
+                       drop = T)
+
+ratio_male <- subset(biometric_data,
+                       subset = gender == "m",
+                       select = ratio,
+                       drop = T)
+                       
+t.test(ratio_female, ratio_male)
+```
+De p-waarde is net wat hoger dan 0.05. Dit betekend dat er net niet genoeg bewijs is om de nulhypothese te verwerpen.
+```{r}
+wilcox.test(ratio_female, ratio_male)
+```
+Dit is significant genoeg volgens de wilcox test.
 
 ### De hypothese aannemen?
 
